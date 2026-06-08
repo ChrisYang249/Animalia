@@ -14,7 +14,7 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children, checkRole = t
   const location = useLocation();
 
   if (!isAuthenticated) {
-    return <Navigate to="/login" replace />;
+    return <Navigate to="/staff/login" replace />;
   }
 
   // Check role-based access

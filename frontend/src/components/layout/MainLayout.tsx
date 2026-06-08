@@ -1,149 +1,34 @@
-import { Layout, Menu, Avatar, Dropdown, Space, Button } from 'antd';
+import { Layout, Menu, Avatar, Dropdown, Space, Button, theme } from 'antd';
 import { Outlet, useNavigate, useLocation } from 'react-router-dom';
 import {
   DashboardOutlined,
-  ProjectOutlined,
-  ExperimentOutlined,
   UserOutlined,
   LogoutOutlined,
   TeamOutlined,
-  FileTextOutlined,
   InboxOutlined,
-  TagsOutlined,
-  DeleteOutlined,
+  ShoppingOutlined,
   MenuFoldOutlined,
   MenuUnfoldOutlined,
-  WarningOutlined,
-  SettingOutlined,
 } from '@ant-design/icons';
 import { useAuthStore } from '../../store/authStore';
-import { canAccessRoute } from '../../config/rolePermissions';
-import { useMemo, useState } from 'react';
+import AnimaliaLogo from '../AnimaliaLogo';
+import { useState } from 'react';
 
 const { Header, Sider, Content } = Layout;
+
+const menuItems = [
+  { key: '/dashboard', icon: <DashboardOutlined />, label: 'Dashboard' },
+  { key: '/clients', icon: <TeamOutlined />, label: 'Clients' },
+  { key: '/orders', icon: <ShoppingOutlined />, label: 'Orders' },
+  { key: '/storage', icon: <InboxOutlined />, label: 'Storage' },
+];
 
 const MainLayout = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { user, logout } = useAuthStore();
   const [collapsed, setCollapsed] = useState(false);
-
-  // Define all menu items with their paths
-  const allMenuItems = [
-    {
-      key: '/dashboard',
-      icon: <DashboardOutlined />,
-      label: 'Dashboard',
-    },
-    {
-      key: '/clients',
-      icon: <TeamOutlined />,
-      label: 'Clients',
-    },
-    {
-      key: '/projects',
-      icon: <ProjectOutlined />,
-      label: 'Projects',
-    },
-    {
-      key: 'samples',
-      icon: <ExperimentOutlined />,
-      label: 'Samples',
-      children: [
-        {
-          key: '/samples',
-          label: 'All Samples',
-        },
-        {
-          key: '/samples/accessioning',
-          label: 'Accessioning',
-        },
-        {
-          key: '/samples/extraction-queue',
-          label: 'Extraction Queue',
-        },
-        {
-          key: '/samples/extraction',
-          label: 'In Extraction',
-        },
-        {
-          key: '/samples/dna-quant-queue',
-          label: 'DNA Quant Queue',
-        },
-        {
-          key: '/samples/reprocess',
-          label: 'Reprocess Queue',
-        },
-      ],
-    },
-    {
-      key: '/discrepancy-management',
-      icon: <WarningOutlined />,
-      label: 'Discrepancies',
-    },
-    {
-      key: '/storage',
-      icon: <InboxOutlined />,
-      label: 'Storage',
-    },
-    {
-      key: '/sample-types',
-      icon: <TagsOutlined />,
-      label: 'Sample Types',
-    },
-    {
-      key: '/client-project-config',
-      icon: <SettingOutlined />,
-      label: 'Project ID Config',
-    },
-    {
-      key: '/employees',
-      icon: <UserOutlined />,
-      label: 'Users',
-    },
-    {
-      key: '/logs',
-      icon: <FileTextOutlined />,
-      label: 'Logs',
-    },
-    {
-      key: '/deletion-logs',
-      icon: <DeleteOutlined />,
-      label: 'Deletion Logs',
-    },
-  ];
-
-  // Filter menu items based on user role
-  const menuItems = useMemo(() => {
-    const userRole = user?.role;
-    
-    const filterMenuItems = (items: any[]): any[] => {
-      return items
-        .map(item => {
-          // Check if user can access this route
-          const canAccess = item.key.startsWith('/') 
-            ? canAccessRoute(userRole, item.key)
-            : true; // Parent items without direct routes are always shown if they have accessible children
-          
-          if (!canAccess) return null;
-          
-          // If item has children, filter them recursively
-          if (item.children) {
-            const filteredChildren = filterMenuItems(item.children);
-            
-            // Only include parent if it has accessible children
-            if (filteredChildren.length === 0) return null;
-            
-            return { ...item, children: filteredChildren };
-          }
-          
-          return item;
-        })
-        .filter(Boolean);
-    };
-    
-    return filterMenuItems(allMenuItems);
-  }, [user?.role]);
+  const { token } = theme.useToken();
 
   const userMenuItems = [
     {
@@ -152,67 +37,95 @@ const MainLayout = () => {
       label: 'Logout',
       onClick: () => {
         logout();
-        navigate('/login');
+        navigate('/staff/login');
       },
     },
   ];
 
   return (
     <Layout style={{ minHeight: '100vh' }}>
-      <Sider 
-        theme="dark" 
+      <Sider
+        theme="light"
         breakpoint="lg"
-        collapsedWidth="80"
+        collapsedWidth={72}
         collapsed={collapsed}
-        onCollapse={(collapsed) => setCollapsed(collapsed)}
+        onCollapse={setCollapsed}
+        style={{
+          borderRight: '1px solid #f0ebe6',
+          background: '#fff',
+        }}
       >
-        <div style={{ 
-          height: 32, 
-          margin: 16, 
-          color: 'white',
-          fontSize: collapsed ? 14 : 20,
-          textAlign: 'center'
-        }}>
-          {collapsed ? 'LIMS' : 'LIMS System'}
+        <div
+          style={{
+            height: 64,
+            margin: collapsed ? '12px 8px' : '12px 16px',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: collapsed ? 'center' : 'flex-start',
+            gap: 10,
+          }}
+        >
+          <AnimaliaLogo size={collapsed ? 'xs' : 'sm'} />
+          {!collapsed && (
+            <span
+              style={{
+                fontWeight: 700,
+                fontSize: 15,
+                color: '#1a1a1a',
+                lineHeight: 1.2,
+              }}
+            >
+              Animalia
+            </span>
+          )}
         </div>
         <Menu
-          theme="dark"
+          theme="light"
           mode="inline"
           selectedKeys={[location.pathname]}
           items={menuItems}
           onClick={({ key }) => navigate(key)}
+          style={{ border: 'none' }}
         />
       </Sider>
       <Layout>
-        <Header style={{ 
-          padding: '0 24px', 
-          background: '#fff',
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center'
-        }}>
+        <Header
+          style={{
+            padding: '0 24px',
+            background: '#fff',
+            borderBottom: '1px solid #f0ebe6',
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+          }}
+        >
           <div style={{ display: 'flex', alignItems: 'center' }}>
             <Button
               type="text"
               icon={collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
               onClick={() => setCollapsed(!collapsed)}
-              style={{
-                fontSize: '16px',
-                width: 64,
-                height: 64,
-                marginRight: 16,
-              }}
+              style={{ fontSize: 16, width: 48, height: 48, marginRight: 8 }}
             />
-            <h2 style={{ margin: 0 }}>Laboratory Information Management System</h2>
+            <h2 style={{ margin: 0, fontSize: 18, fontWeight: 600, color: token.colorPrimary }}>
+              Animalia Staff Portal
+            </h2>
           </div>
           <Dropdown menu={{ items: userMenuItems }} placement="bottomRight">
             <Space style={{ cursor: 'pointer' }}>
-              <Avatar icon={<UserOutlined />} />
+              <Avatar style={{ backgroundColor: token.colorPrimary }} icon={<UserOutlined />} />
               <span>{user?.full_name}</span>
             </Space>
           </Dropdown>
         </Header>
-        <Content style={{ margin: '24px 16px', padding: 24, background: '#fff' }}>
+        <Content
+          style={{
+            margin: 24,
+            padding: 24,
+            background: '#fff',
+            borderRadius: 12,
+            minHeight: 280,
+          }}
+        >
           <Outlet />
         </Content>
       </Layout>

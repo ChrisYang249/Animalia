@@ -22,9 +22,9 @@ api.interceptors.request.use((config) => {
 api.interceptors.response.use(
   (response) => response,
   (error) => {
-    if (error.response?.status === 401 && !window.location.pathname.includes('/login')) {
+    if (error.response?.status === 401 && !window.location.pathname.includes('/staff/login')) {
       localStorage.removeItem('access_token');
-      window.location.href = '/login';
+      window.location.href = '/staff/login';
     }
     return Promise.reject(error);
   }

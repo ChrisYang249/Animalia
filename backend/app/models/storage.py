@@ -17,8 +17,7 @@ class StorageLocation(Base, TimestampMixin):
     
     # Unique constraint on combination of freezer, shelf, box, and position
     __table_args__ = (
-        {'comment': 'Storage locations for samples'},
+        {'comment': 'Storage locations'},
     )
     
-    # Relationships
-    samples = relationship("Sample", back_populates="storage_location")
+    # Relationships - removed Sample relationship for inventory management system

@@ -1,0 +1,108 @@
+.cat-heart {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 72px;
+}
+
+.cat-heart__btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 52px;
+  height: 52px;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  padding: 0;
+  color: #ccc;
+  transition: color 0.2s ease, transform 0.2s ease;
+  position: relative;
+  z-index: 2;
+}
+
+.cat-heart__btn:hover {
+  color: #e8612a;
+  transform: scale(1.08);
+}
+
+.cat-heart__btn--liked {
+  color: #fe2c55;
+}
+
+.cat-heart__btn--liked .cat-heart__icon path {
+  fill: rgba(254, 44, 85, 0.92);
+  stroke: #fe2c55;
+}
+
+.cat-heart__btn--pop {
+  animation: heartPop 0.45s cubic-bezier(0.17, 0.67, 0.35, 1.4);
+}
+
+@keyframes heartPop {
+  0% { transform: scale(1); }
+  35% { transform: scale(1.35); }
+  65% { transform: scale(0.92); }
+  100% { transform: scale(1); }
+}
+
+.cat-heart__icon {
+  width: 36px;
+  height: 36px;
+  display: block;
+}
+
+.cat-heart__icon path {
+  fill: transparent;
+  transition: fill 0.25s ease, stroke 0.25s ease;
+}
+
+.cat-heart__ring {
+  position: absolute;
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  border: 2px solid #fe2c55;
+  opacity: 0;
+  pointer-events: none;
+  z-index: 1;
+  animation: heartRing 0.55s ease-out forwards;
+}
+
+@keyframes heartRing {
+  0% {
+    opacity: 0.7;
+    transform: scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(2.2);
+  }
+}
+
+.cat-heart__particle {
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #fe2c55;
+  opacity: 0;
+  pointer-events: none;
+  z-index: 1;
+  animation: heartBurst 0.65s ease-out forwards;
+  animation-delay: calc(var(--i) * 0.02s);
+  transform: rotate(calc(var(--i) * 45deg)) translateY(0);
+}
+
+@keyframes heartBurst {
+  0% {
+    opacity: 1;
+    transform: rotate(calc(var(--i) * 45deg)) translateY(0) scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: rotate(calc(var(--i) * 45deg)) translateY(-52px) scale(0.2);
+  }
+}

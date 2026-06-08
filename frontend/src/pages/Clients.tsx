@@ -1,26 +1,29 @@
 import { useState, useEffect } from 'react';
-import { Table, Button, Space, Modal, Form, Input, message, Tag, Checkbox, Divider, Badge } from 'antd';
-import { PlusOutlined, EditOutlined, EyeOutlined, SettingOutlined } from '@ant-design/icons';
+import { Table, Button, Space, Modal, Form, Input, message } from 'antd';
+import { PlusOutlined } from '@ant-design/icons';
 import { api } from '../config/api';
 
 interface Client {
   id: number;
   name: string;
-  institution?: string;
-  email: string;
-  phone?: string;
-  address?: string;
-  abbreviation?: string;
-  use_custom_naming: boolean;
+  email?: string | null;
+  phone?: string | null;
   created_at: string;
   updated_at: string;
 }
+
+const emptyDisplay = (value?: string | null) => value || '—';
+
+const normalizePayload = (values: { name: string; email?: string; phone?: string }) => ({
+  name: values.name.trim(),
+  email: values.email?.trim() || null,
+  phone: values.phone?.trim() || null,
+});
 
 const Clients = () => {
   const [clients, setClients] = useState<Client[]>([]);
   const [loading, setLoading] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
-  const [viewModalVisible, setViewModalVisible] = useState(false);
   const [editModalVisible, setEditModalVisible] = useState(false);
   const [selectedClient, setSelectedClient] = useState<Client | null>(null);
   const [form] = Form.useForm();
@@ -31,7 +34,7 @@ const Clients = () => {
     try {
       const response = await api.get('/clients');
       setClients(response.data);
-    } catch (error) {
+    } catch {
       message.error('Failed to fetch clients');
     }
     setLoading(false);
@@ -46,360 +49,144 @@ const Clients = () => {
       title: 'Name',
       dataIndex: 'name',
       key: 'name',
-      render: (text: string) => <strong>{text}</strong>,
-    },
-    {
-      title: 'Institution',
-      dataIndex: 'institution',
-      key: 'institution',
-      render: (text: string) => text || <Tag color="default">N/A</Tag>,
-    },
-    {
-      title: 'Project ID Type',
-      key: 'naming',
-      render: (_: any, record: Client) => {
-        if (record.use_custom_naming) {
-          return (
-            <Space>
-              <Badge status="processing" text="Custom" />
-              {record.abbreviation && <Tag color="blue">{record.abbreviation}</Tag>}
-            </Space>
-          );
-        }
-        return <Badge status="default" text="Standard CMBP" />;
-      },
+      render: (text: string, record: Client) => (
+        <Button
+          type="link"
+          style={{ padding: 0, fontWeight: 600, height: 'auto' }}
+          onClick={() => handleEdit(record)}
+        >
+          {text}
+        </Button>
+      ),
     },
     {
       title: 'Email',
       dataIndex: 'email',
       key: 'email',
+      render: (text: string) => emptyDisplay(text),
     },
     {
       title: 'Phone',
       dataIndex: 'phone',
       key: 'phone',
-      render: (text: string) => text || <Tag color="default">N/A</Tag>,
-    },
-    {
-      title: 'Actions',
-      key: 'action',
-      render: (_: any, record: Client) => (
-        <Space>
-          <Button 
-            type="link" 
-            icon={<EyeOutlined />}
-            onClick={() => handleView(record)}
-          >
-            View
-          </Button>
-          <Button 
-            type="link" 
-            icon={<EditOutlined />}
-            onClick={() => handleEdit(record)}
-          >
-            Edit
-          </Button>
-        </Space>
-      ),
+      render: (text: string) => emptyDisplay(text),
     },
   ];
 
-  const handleSubmit = async (values: any) => {
+  const handleSubmit = async (values: { name: string; email?: string; phone?: string }) => {
     try {
-      await api.post('/clients/', values);
+      await api.post('/clients/', normalizePayload(values));
       message.success('Client created successfully');
       setModalVisible(false);
       form.resetFields();
       fetchClients();
-    } catch (error: any) {
-      console.error('Client creation error:', error);
-      message.error(error.response?.data?.detail || 'Failed to create client');
+    } catch (error: unknown) {
+      const err = error as { response?: { data?: { detail?: string } } };
+      message.error(err.response?.data?.detail || 'Failed to create client');
     }
-  };
-
-  const handleView = (client: Client) => {
-    setSelectedClient(client);
-    setViewModalVisible(true);
   };
 
   const handleEdit = (client: Client) => {
     setSelectedClient(client);
-    editForm.setFieldsValue(client);
+    editForm.setFieldsValue({
+      name: client.name,
+      email: client.email || '',
+      phone: client.phone || '',
+    });
     setEditModalVisible(true);
   };
 
-  const handleUpdate = async (values: any) => {
+  const handleUpdate = async (values: { name: string; email?: string; phone?: string }) => {
     if (!selectedClient) return;
-    
+
     try {
-      await api.put(`/clients/${selectedClient.id}`, values);
+      await api.put(`/clients/${selectedClient.id}`, normalizePayload(values));
       message.success('Client updated successfully');
       setEditModalVisible(false);
       editForm.resetFields();
+      setSelectedClient(null);
       fetchClients();
-    } catch (error: any) {
-      console.error('Client update error:', error);
-      message.error(error.response?.data?.detail || 'Failed to update client');
+    } catch (error: unknown) {
+      const err = error as { response?: { data?: { detail?: string } } };
+      message.error(err.response?.data?.detail || 'Failed to update client');
     }
   };
 
+  const clientFormFields = (
+    <>
+      <Form.Item
+        name="name"
+        label="Name"
+        rules={[{ required: true, message: 'Please enter a name' }]}
+      >
+        <Input placeholder="Client name" />
+      </Form.Item>
+
+      <Form.Item
+        name="email"
+        label="Email"
+        rules={[{ type: 'email', message: 'Please enter a valid email' }]}
+      >
+        <Input placeholder="Optional" />
+      </Form.Item>
+
+      <Form.Item name="phone" label="Phone">
+        <Input placeholder="Optional" />
+      </Form.Item>
+    </>
+  );
+
   return (
     <div>
-      <div style={{ marginBottom: 16, display: 'flex', justifyContent: 'space-between' }}>
-        <h1>Clients</h1>
-        <Button
-          type="primary"
-          icon={<PlusOutlined />}
-          onClick={() => setModalVisible(true)}
-        >
+      <div style={{ marginBottom: 16, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <h1 style={{ margin: 0 }}>Clients</h1>
+        <Button type="primary" icon={<PlusOutlined />} onClick={() => setModalVisible(true)}>
           New Client
         </Button>
       </div>
 
-      <Table
-        columns={columns}
-        dataSource={clients}
-        loading={loading}
-        rowKey="id"
-      />
+      <Table columns={columns} dataSource={clients} loading={loading} rowKey="id" />
 
-      {/* Create Client Modal */}
       <Modal
-        title="Create New Client"
+        title="New Client"
         open={modalVisible}
-        onCancel={() => setModalVisible(false)}
+        onCancel={() => {
+          setModalVisible(false);
+          form.resetFields();
+        }}
         footer={null}
       >
-        <Form
-          form={form}
-          layout="vertical"
-          onFinish={handleSubmit}
-        >
-          <Form.Item
-            name="name"
-            label="Client Name"
-            rules={[{ required: true, message: 'Please enter client name' }]}
-          >
-            <Input />
-          </Form.Item>
-
-          <Form.Item
-            name="institution"
-            label="Institution"
-          >
-            <Input />
-          </Form.Item>
-
-          <Form.Item
-            name="email"
-            label="Email"
-            rules={[
-              { required: true, message: 'Please enter email' },
-              { type: 'email', message: 'Please enter a valid email' }
-            ]}
-          >
-            <Input />
-          </Form.Item>
-
-          <Form.Item
-            name="phone"
-            label="Phone"
-          >
-            <Input />
-          </Form.Item>
-
-          <Form.Item
-            name="address"
-            label="Address"
-          >
-            <Input.TextArea rows={3} />
-          </Form.Item>
-
-          <Divider orientation="left">Project ID Settings</Divider>
-
-          <Form.Item
-            name="use_custom_naming"
-            valuePropName="checked"
-            initialValue={false}
-          >
-            <Checkbox>
-              Use custom project ID naming (for kit projects)
-            </Checkbox>
-          </Form.Item>
-
-          <Form.Item
-            noStyle
-            shouldUpdate={(prevValues, currentValues) => 
-              prevValues.use_custom_naming !== currentValues.use_custom_naming
-            }
-          >
-            {({ getFieldValue }) => 
-              getFieldValue('use_custom_naming') && (
-                <Form.Item
-                  name="abbreviation"
-                  label="Client Abbreviation"
-                  help="2-4 character code for project IDs (e.g., NB, UCLA)"
-                  rules={[
-                    { required: true, message: 'Please enter an abbreviation' },
-                    { max: 10, message: 'Abbreviation must be 10 characters or less' },
-                    { pattern: /^[A-Z0-9]+$/, message: 'Only uppercase letters and numbers' }
-                  ]}
-                >
-                  <Input 
-                    placeholder="e.g., NB, UCLA" 
-                    style={{ textTransform: 'uppercase' }}
-                    onChange={(e) => {
-                      form.setFieldsValue({ abbreviation: e.target.value.toUpperCase() });
-                    }}
-                  />
-                </Form.Item>
-              )
-            }
-          </Form.Item>
-
+        <Form form={form} layout="vertical" onFinish={handleSubmit}>
+          {clientFormFields}
           <Form.Item>
             <Space>
               <Button type="primary" htmlType="submit">
                 Create
               </Button>
-              <Button onClick={() => setModalVisible(false)}>
-                Cancel
-              </Button>
+              <Button onClick={() => setModalVisible(false)}>Cancel</Button>
             </Space>
           </Form.Item>
         </Form>
       </Modal>
 
-      {/* View Client Modal */}
-      <Modal
-        title="Client Details"
-        open={viewModalVisible}
-        onCancel={() => setViewModalVisible(false)}
-        footer={[
-          <Button key="close" onClick={() => setViewModalVisible(false)}>
-            Close
-          </Button>
-        ]}
-      >
-        {selectedClient && (
-          <div>
-            <p><strong>Name:</strong> {selectedClient.name}</p>
-            <p><strong>Institution:</strong> {selectedClient.institution || 'N/A'}</p>
-            <p><strong>Email:</strong> {selectedClient.email}</p>
-            <p><strong>Phone:</strong> {selectedClient.phone || 'N/A'}</p>
-            <p><strong>Address:</strong> {selectedClient.address || 'N/A'}</p>
-            <Divider orientation="left">Project ID Settings</Divider>
-            <p><strong>Project ID Type:</strong> {selectedClient.use_custom_naming ? 'Custom Naming' : 'Standard CMBP'}</p>
-            {selectedClient.use_custom_naming && (
-              <p><strong>Abbreviation:</strong> {selectedClient.abbreviation || 'Not set'}</p>
-            )}
-            <p><strong>Created:</strong> {new Date(selectedClient.created_at).toLocaleDateString()}</p>
-            <p><strong>Updated:</strong> {new Date(selectedClient.updated_at).toLocaleDateString()}</p>
-          </div>
-        )}
-      </Modal>
-
-      {/* Edit Client Modal */}
       <Modal
         title="Edit Client"
         open={editModalVisible}
-        onCancel={() => setEditModalVisible(false)}
+        onCancel={() => {
+          setEditModalVisible(false);
+          editForm.resetFields();
+          setSelectedClient(null);
+        }}
         footer={null}
       >
-        <Form
-          form={editForm}
-          layout="vertical"
-          onFinish={handleUpdate}
-        >
-          <Form.Item
-            name="name"
-            label="Client Name"
-            rules={[{ required: true, message: 'Please enter client name' }]}
-          >
-            <Input />
-          </Form.Item>
-
-          <Form.Item
-            name="institution"
-            label="Institution"
-          >
-            <Input />
-          </Form.Item>
-
-          <Form.Item
-            name="email"
-            label="Email"
-            rules={[
-              { required: true, message: 'Please enter email' },
-              { type: 'email', message: 'Please enter a valid email' }
-            ]}
-          >
-            <Input />
-          </Form.Item>
-
-          <Form.Item
-            name="phone"
-            label="Phone"
-          >
-            <Input />
-          </Form.Item>
-
-          <Form.Item
-            name="address"
-            label="Address"
-          >
-            <Input.TextArea rows={3} />
-          </Form.Item>
-
-          <Divider orientation="left">Project ID Settings</Divider>
-
-          <Form.Item
-            name="use_custom_naming"
-            valuePropName="checked"
-          >
-            <Checkbox>
-              Use custom project ID naming (for kit projects)
-            </Checkbox>
-          </Form.Item>
-
-          <Form.Item
-            noStyle
-            shouldUpdate={(prevValues, currentValues) => 
-              prevValues.use_custom_naming !== currentValues.use_custom_naming
-            }
-          >
-            {({ getFieldValue }) => 
-              getFieldValue('use_custom_naming') && (
-                <Form.Item
-                  name="abbreviation"
-                  label="Client Abbreviation"
-                  help="2-4 character code for project IDs (e.g., NB, UCLA)"
-                  rules={[
-                    { required: true, message: 'Please enter an abbreviation' },
-                    { max: 10, message: 'Abbreviation must be 10 characters or less' },
-                    { pattern: /^[A-Z0-9]+$/, message: 'Only uppercase letters and numbers' }
-                  ]}
-                >
-                  <Input 
-                    placeholder="e.g., NB, UCLA" 
-                    style={{ textTransform: 'uppercase' }}
-                    onChange={(e) => {
-                      editForm.setFieldsValue({ abbreviation: e.target.value.toUpperCase() });
-                    }}
-                  />
-                </Form.Item>
-              )
-            }
-          </Form.Item>
-
+        <Form form={editForm} layout="vertical" onFinish={handleUpdate}>
+          {clientFormFields}
           <Form.Item>
             <Space>
               <Button type="primary" htmlType="submit">
-                Update
+                Save
               </Button>
-              <Button onClick={() => setEditModalVisible(false)}>
-                Cancel
-              </Button>
+              <Button onClick={() => setEditModalVisible(false)}>Cancel</Button>
             </Space>
           </Form.Item>
         </Form>

@@ -1,7 +1,9 @@
-import { Form, Input, Button, Card, message } from 'antd';
-import { UserOutlined, LockOutlined } from '@ant-design/icons';
-import { useNavigate } from 'react-router-dom';
+import { Form, Input, Button, message } from 'antd';
+import { UserOutlined, LockOutlined, ArrowLeftOutlined } from '@ant-design/icons';
+import { useNavigate, Link } from 'react-router-dom';
 import { useAuthStore } from '../store/authStore';
+import AnimaliaLogo from '../components/AnimaliaLogo';
+import './Login.css';
 
 const Login = () => {
   const navigate = useNavigate();
@@ -19,28 +21,30 @@ const Login = () => {
   };
 
   return (
-    <div style={{ 
-      height: '100vh', 
-      display: 'flex', 
-      justifyContent: 'center', 
-      alignItems: 'center',
-      background: '#f0f2f5'
-    }}>
-      <Card title="LIMS System Login" style={{ width: 400 }}>
+    <div className="login-page">
+      <div className="login-page__card">
+        <div className="login-page__logo-wrap">
+          <AnimaliaLogo size="md" />
+        </div>
+
+        <h2 className="login-page__title">Staff Portal</h2>
+        <p className="login-page__subtitle">Animalia Welfare and More</p>
+
         <Form
           form={form}
           name="login"
           onFinish={onFinish}
           autoComplete="off"
           layout="vertical"
+          className="login-page__form"
         >
           <Form.Item
             name="username"
             rules={[{ required: true, message: 'Please input your username!' }]}
           >
-            <Input 
-              prefix={<UserOutlined />} 
-              placeholder="Username" 
+            <Input
+              prefix={<UserOutlined />}
+              placeholder="Username"
               size="large"
             />
           </Form.Item>
@@ -57,12 +61,21 @@ const Login = () => {
           </Form.Item>
 
           <Form.Item>
-            <Button type="primary" htmlType="submit" style={{ width: '100%' }} size="large">
+            <Button
+              type="primary"
+              htmlType="submit"
+              className="login-page__submit"
+              size="large"
+            >
               Log in
             </Button>
           </Form.Item>
         </Form>
-      </Card>
+
+        <Link to="/" className="login-page__back">
+          <ArrowLeftOutlined /> Back to cat browse
+        </Link>
+      </div>
     </div>
   );
 };

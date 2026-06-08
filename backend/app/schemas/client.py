@@ -1,38 +1,33 @@
 from typing import Optional
-from pydantic import BaseModel, EmailStr
+from pydantic import BaseModel, EmailStr, field_validator
 from datetime import datetime
 
 
 class ClientBase(BaseModel):
     name: str
-    institution: Optional[str] = None
-    email: EmailStr
+    email: Optional[EmailStr] = None
     phone: Optional[str] = None
-    address: Optional[str] = None
-    subscription_id: Optional[str] = None
-    abbreviation: Optional[str] = None
-    use_custom_naming: bool = False
 
 
 class ClientCreate(ClientBase):
     pass
 
 
-class ClientUpdate(ClientBase):
+class ClientUpdate(BaseModel):
     name: Optional[str] = None
     email: Optional[EmailStr] = None
-    institution: Optional[str] = None
     phone: Optional[str] = None
-    address: Optional[str] = None
-    subscription_id: Optional[str] = None
-    abbreviation: Optional[str] = None
-    use_custom_naming: Optional[bool] = None
 
 
 class ClientInDBBase(ClientBase):
     id: int
     created_at: datetime
     updated_at: Optional[datetime] = None
+
+    @field_validator("email", mode="before")
+    @classmethod
+    def empty_email_to_none(cls, v):
+        return v or None
 
     class Config:
         from_attributes = True

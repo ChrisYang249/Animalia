@@ -1,0 +1,30 @@
+.animalia-logo {
+  display: block;
+  object-fit: contain;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.animalia-logo--xs {
+  width: 36px;
+  height: 36px;
+  filter: drop-shadow(0 2px 6px rgba(232, 97, 42, 0.18));
+}
+
+.animalia-logo--sm {
+  width: 44px;
+  height: 44px;
+  filter: drop-shadow(0 2px 8px rgba(232, 97, 42, 0.2));
+}
+
+.animalia-logo--md {
+  width: 120px;
+  height: 120px;
+  filter: drop-shadow(0 6px 18px rgba(232, 97, 42, 0.22));
+}
+
+.animalia-logo--lg {
+  width: 168px;
+  height: 168px;
+  filter: drop-shadow(0 8px 24px rgba(232, 97, 42, 0.25));
+}
