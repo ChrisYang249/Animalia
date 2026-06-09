@@ -20,6 +20,23 @@
   flex: 1;
   display: flex;
   justify-content: center;
+  align-items: center;
+  min-height: 400px;
+}
+
+.home__loading {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  min-height: 400px;
+}
+
+.home__error {
+  color: #888;
+  font-size: 15px;
+  text-align: center;
+  max-width: 280px;
 }
 
 .home__cta-section {

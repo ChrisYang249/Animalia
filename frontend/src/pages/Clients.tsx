@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
-import { Table, Button, Space, Modal, Form, Input, message } from 'antd';
-import { PlusOutlined } from '@ant-design/icons';
+import { Table, Button, Space, Modal, Form, Input, message, Popconfirm } from 'antd';
+import { PlusOutlined, DeleteOutlined } from '@ant-design/icons';
 import { api } from '../config/api';
 
 interface Client {
@@ -71,6 +71,29 @@ const Clients = () => {
       key: 'phone',
       render: (text: string) => emptyDisplay(text),
     },
+    {
+      title: '',
+      key: 'delete',
+      width: 48,
+      align: 'center' as const,
+      render: (_: unknown, record: Client) => (
+        <Popconfirm
+          title="Delete this client?"
+          description={record.name}
+          onConfirm={() => handleDelete(record.id)}
+          okText="Delete"
+          cancelText="Cancel"
+          okButtonProps={{ danger: true }}
+        >
+          <Button
+            type="text"
+            danger
+            icon={<DeleteOutlined />}
+            aria-label={`Delete ${record.name}`}
+          />
+        </Popconfirm>
+      ),
+    },
   ];
 
   const handleSubmit = async (values: { name: string; email?: string; phone?: string }) => {
@@ -94,6 +117,16 @@ const Clients = () => {
       phone: client.phone || '',
     });
     setEditModalVisible(true);
+  };
+
+  const handleDelete = async (id: number) => {
+    try {
+      await api.delete(`/clients/${id}`);
+      message.success('Client deleted');
+      fetchClients();
+    } catch {
+      message.error('Failed to delete client');
+    }
   };
 
   const handleUpdate = async (values: { name: string; email?: string; phone?: string }) => {

@@ -5,7 +5,7 @@ from sqlalchemy import func
 from datetime import datetime
 
 from app.api import deps
-from app.models import User, Product, Client, StorageLocation
+from app.models import User, Product, Client
 
 router = APIRouter()
 
@@ -33,12 +33,9 @@ def get_dashboard_stats(
         or 0
     )
 
-    storage_locations = db.query(func.count(StorageLocation.id)).scalar() or 0
-
     return {
         "total_clients": total_clients,
         "total_orders": total_orders,
         "pending_orders": pending_orders,
         "completed_this_month": completed_this_month,
-        "storage_locations": storage_locations,
     }

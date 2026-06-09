@@ -3,10 +3,11 @@ import { ConfigProvider, App as AntdApp } from 'antd';
 import { useEffect } from 'react';
 import { useAuthStore } from './store/authStore';
 import Home from './pages/Home';
+import Apply from './pages/Apply';
+import ApplyConfirmation from './pages/ApplyConfirmation';
 import Login from './pages/Login';
 import Dashboard from './pages/Dashboard';
 import Orders from './pages/Orders';
-import Storage from './pages/Storage';
 import Clients from './pages/Clients';
 import MainLayout from './components/layout/MainLayout';
 import ProtectedRoute from './components/auth/ProtectedRoute';
@@ -37,6 +38,8 @@ function App() {
         <Router>
           <Routes>
             <Route path="/" element={<Home />} />
+            <Route path="/apply" element={<Apply />} />
+            <Route path="/apply/confirmation" element={<ApplyConfirmation />} />
             <Route path="/staff/login" element={<Login />} />
             <Route path="/login" element={<Navigate to="/staff/login" replace />} />
             <Route
@@ -49,7 +52,7 @@ function App() {
               <Route path="dashboard" element={<Dashboard />} />
               <Route path="clients" element={<Clients />} />
               <Route path="orders" element={<Orders />} />
-              <Route path="storage" element={<Storage />} />
+              <Route path="storage" element={<Navigate to="/dashboard" replace />} />
             </Route>
           </Routes>
         </Router>

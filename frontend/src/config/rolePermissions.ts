@@ -13,13 +13,11 @@ export const routePermissions: RoutePermission[] = [
   { path: '/dashboard', allowedRoles: ALL_STAFF },
   { path: '/clients', allowedRoles: ALL_STAFF },
   { path: '/orders', allowedRoles: ALL_STAFF },
-  { path: '/storage', allowedRoles: ALL_STAFF },
 ];
 
 export const actionPermissions = {
   manageClients: ALL_STAFF,
   manageOrders: ALL_STAFF,
-  manageStorage: ALL_STAFF,
 };
 
 export const canAccessRoute = (userRole: string | undefined, path: string): boolean => {

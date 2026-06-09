@@ -89,6 +89,19 @@ const Orders = () => {
     setModalVisible(true);
   };
 
+  const handleStatusToggle = async (order: Order) => {
+    const nextStatus = order.status === 'Received' ? 'Pending' : 'Received';
+    try {
+      await api.put(`/products/${order.id}`, { status: nextStatus });
+      setOrders((prev) =>
+        prev.map((o) => (o.id === order.id ? { ...o, status: nextStatus } : o))
+      );
+      message.success(`Status updated to ${nextStatus}`);
+    } catch {
+      message.error('Failed to update status');
+    }
+  };
+
   const handleDelete = async (id: number) => {
     try {
       await api.delete(`/products/${id}`);
@@ -161,7 +174,16 @@ const Orders = () => {
       title: 'Status',
       dataIndex: 'status',
       key: 'status',
-      render: (status: string) => statusTag(status),
+      render: (status: string, record: Order) => (
+        <button
+          type="button"
+          onClick={() => handleStatusToggle(record)}
+          title="Click to change status"
+          style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer' }}
+        >
+          {statusTag(status)}
+        </button>
+      ),
     },
     {
       title: '',

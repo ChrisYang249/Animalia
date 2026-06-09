@@ -1,6 +1,7 @@
 import { useState, useCallback, useEffect } from 'react';
 import { LeftOutlined, RightOutlined } from '@ant-design/icons';
 import type { Cat } from '../data/cats';
+import { catImageUrl } from '../config/api';
 import CatHeartButton from './CatHeartButton';
 import './CatCarousel.css';
 
@@ -61,13 +62,13 @@ const CatCarousel = ({ cats, onIndexChange }: CatCarouselProps) => {
       <div className="cat-carousel__deck">
         {cats.length > 1 && (
           <div className="cat-card cat-card--peek cat-card--peek-left" aria-hidden>
-            <img src={cats[prevIndex].image} alt="" />
+            <img src={catImageUrl(cats[prevIndex].image)} alt="" />
           </div>
         )}
 
         <div className={slideClass}>
           <div className="cat-card__image-wrap">
-            <img src={cat.image} alt={cat.name} className="cat-card__image" />
+            <img src={catImageUrl(cat.image)} alt={cat.name} className="cat-card__image" />
           </div>
           <div className="cat-card__actions">
             <CatHeartButton catId={cat.id} />
@@ -76,7 +77,7 @@ const CatCarousel = ({ cats, onIndexChange }: CatCarouselProps) => {
 
         {cats.length > 1 && (
           <div className="cat-card cat-card--peek cat-card--peek-right" aria-hidden>
-            <img src={cats[nextIndex].image} alt="" />
+            <img src={catImageUrl(cats[nextIndex].image)} alt="" />
           </div>
         )}
       </div>

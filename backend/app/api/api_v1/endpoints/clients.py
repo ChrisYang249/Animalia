@@ -4,7 +4,7 @@ from sqlalchemy.orm import Session
 from sqlalchemy import func
 
 from app.api import deps
-from app.models import User, Client
+from app.models import User, Client, DeletionLog
 from app.schemas.client import Client as ClientSchema, ClientCreate, ClientUpdate
 
 router = APIRouter()
@@ -95,3 +95,31 @@ def update_client(
     db.commit()
     db.refresh(client)
     return client
+
+
+@router.delete("/{client_id}")
+def delete_client(
+    *,
+    db: Session = Depends(deps.get_db),
+    client_id: int,
+    current_user: User = Depends(deps.get_current_user),
+) -> Any:
+    client = db.query(Client).filter(Client.id == client_id).first()
+    if not client:
+        raise HTTPException(status_code=404, detail="Client not found")
+
+    deletion_log = DeletionLog(
+        table_name="clients",
+        record_id=client_id,
+        deleted_by_id=current_user.id,
+        record_data={
+            "name": client.name,
+            "email": client.email,
+            "phone": client.phone,
+        },
+    )
+    db.add(deletion_log)
+
+    db.delete(client)
+    db.commit()
+    return {"message": "Client deleted successfully"}

@@ -1,19 +1,30 @@
 import { useNavigate } from 'react-router-dom';
-import { Button } from 'antd';
+import { Button, Spin } from 'antd';
 import { ArrowRightOutlined } from '@ant-design/icons';
 import CatCarousel from '../components/CatCarousel';
 import AnimaliaLogo from '../components/AnimaliaLogo';
-import { cats } from '../data/cats';
+import { useCats } from '../hooks/useCats';
 import './Home.css';
 
 const Home = () => {
   const navigate = useNavigate();
+  const { cats, loading, error } = useCats();
 
   return (
     <div className="home">
       <div className="home__inner">
         <section className="home__carousel-section">
-          <CatCarousel cats={cats} />
+          {loading ? (
+            <div className="home__loading">
+              <Spin size="large" />
+            </div>
+          ) : error ? (
+            <p className="home__error">{error}</p>
+          ) : cats.length === 0 ? (
+            <p className="home__error">No cats available right now. Check back soon!</p>
+          ) : (
+            <CatCarousel cats={cats} />
+          )}
         </section>
 
         <section className="home__cta-section">
@@ -33,7 +44,7 @@ const Home = () => {
             className="home__continue-btn"
             icon={<ArrowRightOutlined />}
             iconPosition="end"
-            onClick={() => navigate('/staff/login')}
+            onClick={() => navigate('/apply')}
           >
             Continue
           </Button>

@@ -5,8 +5,8 @@ import {
   UserOutlined,
   LogoutOutlined,
   TeamOutlined,
-  InboxOutlined,
   ShoppingOutlined,
+  HomeOutlined,
   MenuFoldOutlined,
   MenuUnfoldOutlined,
 } from '@ant-design/icons';
@@ -20,7 +20,7 @@ const menuItems = [
   { key: '/dashboard', icon: <DashboardOutlined />, label: 'Dashboard' },
   { key: '/clients', icon: <TeamOutlined />, label: 'Clients' },
   { key: '/orders', icon: <ShoppingOutlined />, label: 'Orders' },
-  { key: '/storage', icon: <InboxOutlined />, label: 'Storage' },
+  { key: '/', icon: <HomeOutlined />, label: 'Return to Cat Browse' },
 ];
 
 const MainLayout = () => {
