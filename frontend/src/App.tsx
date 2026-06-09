@@ -9,6 +9,7 @@ import Login from './pages/Login';
 import Dashboard from './pages/Dashboard';
 import Orders from './pages/Orders';
 import Clients from './pages/Clients';
+import VisitRequests from './pages/VisitRequests';
 import MainLayout from './components/layout/MainLayout';
 import ProtectedRoute from './components/auth/ProtectedRoute';
 
@@ -50,9 +51,9 @@ function App() {
               }
             >
               <Route path="dashboard" element={<Dashboard />} />
+              <Route path="visit-requests" element={<VisitRequests />} />
               <Route path="clients" element={<Clients />} />
               <Route path="orders" element={<Orders />} />
-              <Route path="storage" element={<Navigate to="/dashboard" replace />} />
             </Route>
           </Routes>
         </Router>

@@ -32,7 +32,7 @@ const Clients = () => {
   const fetchClients = async () => {
     setLoading(true);
     try {
-      const response = await api.get('/clients');
+      const response = await api.get('/clients/');
       setClients(response.data);
     } catch {
       message.error('Failed to fetch clients');

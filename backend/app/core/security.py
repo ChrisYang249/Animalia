@@ -1,10 +1,9 @@
 from datetime import datetime, timedelta
-from typing import Optional, Union
+from typing import Optional
 from jose import JWTError, jwt
 from passlib.context import CryptContext
 from app.core.config import settings
 import re
-import json
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
@@ -25,7 +24,7 @@ def get_password_hash(password: str) -> str:
     return pwd_context.hash(password)
 
 def validate_password_strength(password: str) -> tuple[bool, str]:
-    """Validate password meets CFR Part 11 requirements"""
+    """Validate password meets configured strength rules."""
     if len(password) < settings.PASSWORD_MIN_LENGTH:
         return False, f"Password must be at least {settings.PASSWORD_MIN_LENGTH} characters long"
     
@@ -42,14 +41,3 @@ def validate_password_strength(password: str) -> tuple[bool, str]:
         return False, "Password must contain at least one special character"
     
     return True, "Password is valid"
-
-def check_password_history(password: str, password_history: Optional[str]) -> bool:
-    """Check if password was used recently"""
-    if not password_history:
-        return True
-    
-    history = json.loads(password_history)
-    for old_hash in history[-settings.PASSWORD_HISTORY_COUNT:]:
-        if verify_password(password, old_hash):
-            return False
-    return True

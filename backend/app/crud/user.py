@@ -3,6 +3,7 @@ from datetime import datetime
 import json
 
 from app.models import User
+from app.core.config import settings
 from app.core.security import get_password_hash, verify_password
 
 def get_user(db: Session, user_id: int):
@@ -38,7 +39,7 @@ def authenticate_user(db: Session, username: str, password: str):
     if not verify_password(password, user.hashed_password):
         # Increment failed login attempts
         user.failed_login_attempts += 1
-        if user.failed_login_attempts >= 5:  # Should use settings
+        if user.failed_login_attempts >= settings.MAX_LOGIN_ATTEMPTS:
             user.is_locked = True
         db.commit()
         return None

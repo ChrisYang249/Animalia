@@ -2,7 +2,7 @@ from typing import Any, List
 from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.orm import Session
 from app.api import deps
-from app.models import Product, User, DeletionLog
+from app.models import Product, User
 from app.schemas.product import ProductCreate, ProductUpdate, Product as ProductSchema
 
 router = APIRouter()
@@ -94,19 +94,6 @@ def delete_product(
     product = db.query(Product).filter(Product.id == product_id).first()
     if not product:
         raise HTTPException(status_code=404, detail="Order not found")
-
-    deletion_log = DeletionLog(
-        table_name="products",
-        record_id=product_id,
-        deleted_by_id=current_user.id,
-        record_data={
-            "name": product.name,
-            "quantity": product.quantity,
-            "status": product.status,
-            "order_date": product.order_date.isoformat() if product.order_date else None,
-        },
-    )
-    db.add(deletion_log)
 
     db.delete(product)
     db.commit()

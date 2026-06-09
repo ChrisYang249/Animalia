@@ -1,0 +1,14 @@
+.visit-requests__cats {
+  display: flex;
+  gap: 4px;
+  flex-wrap: wrap;
+}
+
+.visit-requests__cat-thumb {
+  width: 36px;
+  height: 36px;
+  object-fit: cover;
+  object-position: center top;
+  border-radius: 6px;
+  border: 1px solid #f0ebe6;
+}

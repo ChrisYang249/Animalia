@@ -4,7 +4,7 @@ from sqlalchemy.orm import Session
 from sqlalchemy import func
 
 from app.api import deps
-from app.models import User, Client, DeletionLog
+from app.models import User, Client
 from app.schemas.client import Client as ClientSchema, ClientCreate, ClientUpdate
 
 router = APIRouter()
@@ -107,18 +107,6 @@ def delete_client(
     client = db.query(Client).filter(Client.id == client_id).first()
     if not client:
         raise HTTPException(status_code=404, detail="Client not found")
-
-    deletion_log = DeletionLog(
-        table_name="clients",
-        record_id=client_id,
-        deleted_by_id=current_user.id,
-        record_data={
-            "name": client.name,
-            "email": client.email,
-            "phone": client.phone,
-        },
-    )
-    db.add(deletion_log)
 
     db.delete(client)
     db.commit()

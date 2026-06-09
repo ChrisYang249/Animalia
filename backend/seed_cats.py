@@ -9,7 +9,7 @@ sys.path.append(str(Path(__file__).parent))
 
 from app.db.base import SessionLocal
 from app.models.cat import Cat
-from app.core.paths import CATS_UPLOAD_DIR, ensure_upload_dirs
+from app.core.paths import ensure_upload_dirs, get_cats_upload_dir
 
 SEED_CATS = [
     (1, "Lulu"), (2, "Tiggy"), (3, "Mango"), (4, "Jimmy"), (5, "Simba"),
@@ -38,7 +38,7 @@ def main():
                 continue
 
             dest_name = f"cat-{num}.jpg"
-            dest = CATS_UPLOAD_DIR / dest_name
+            dest = get_cats_upload_dir() / dest_name
             shutil.copy2(src, dest)
 
             cat = Cat(

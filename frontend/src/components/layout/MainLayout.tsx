@@ -1,4 +1,4 @@
-import { Layout, Menu, Avatar, Dropdown, Space, Button, theme } from 'antd';
+import { Layout, Menu, Avatar, Dropdown, Space, Button, Badge, theme } from 'antd';
 import { Outlet, useNavigate, useLocation } from 'react-router-dom';
 import {
   DashboardOutlined,
@@ -7,28 +7,53 @@ import {
   TeamOutlined,
   ShoppingOutlined,
   HomeOutlined,
+  CalendarOutlined,
   MenuFoldOutlined,
   MenuUnfoldOutlined,
 } from '@ant-design/icons';
 import { useAuthStore } from '../../store/authStore';
 import AnimaliaLogo from '../AnimaliaLogo';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { api } from '../../config/api';
 
 const { Header, Sider, Content } = Layout;
-
-const menuItems = [
-  { key: '/dashboard', icon: <DashboardOutlined />, label: 'Dashboard' },
-  { key: '/clients', icon: <TeamOutlined />, label: 'Clients' },
-  { key: '/orders', icon: <ShoppingOutlined />, label: 'Orders' },
-  { key: '/', icon: <HomeOutlined />, label: 'Return to Cat Browse' },
-];
 
 const MainLayout = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { user, logout } = useAuthStore();
   const [collapsed, setCollapsed] = useState(false);
+  const [pendingVisits, setPendingVisits] = useState(0);
   const { token } = theme.useToken();
+
+  useEffect(() => {
+    const fetchPending = async () => {
+      try {
+        const response = await api.get('/dashboard/stats');
+        setPendingVisits(response.data.pending_visit_requests ?? 0);
+      } catch {
+        setPendingVisits(0);
+      }
+    };
+    fetchPending();
+  }, [location.pathname]);
+
+  const menuItems = [
+    { key: '/dashboard', icon: <DashboardOutlined />, label: 'Dashboard' },
+    {
+      key: '/visit-requests',
+      icon: <CalendarOutlined />,
+      label: (
+        <span>
+          Visit Requests{' '}
+          {pendingVisits > 0 && <Badge count={pendingVisits} size="small" />}
+        </span>
+      ),
+    },
+    { key: '/clients', icon: <TeamOutlined />, label: 'Clients' },
+    { key: '/orders', icon: <ShoppingOutlined />, label: 'Orders' },
+    { key: '/', icon: <HomeOutlined />, label: 'Return to Cat Browse' },
+  ];
 
   const userMenuItems = [
     {

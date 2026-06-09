@@ -5,7 +5,7 @@ from sqlalchemy import func
 from datetime import datetime
 
 from app.api import deps
-from app.models import User, Product, Client
+from app.models import User, Product, Client, AdoptionApplication
 
 router = APIRouter()
 
@@ -33,9 +33,17 @@ def get_dashboard_stats(
         or 0
     )
 
+    pending_visit_requests = (
+        db.query(func.count(AdoptionApplication.id))
+        .filter(AdoptionApplication.status == "submitted")
+        .scalar()
+        or 0
+    )
+
     return {
         "total_clients": total_clients,
         "total_orders": total_orders,
         "pending_orders": pending_orders,
         "completed_this_month": completed_this_month,
+        "pending_visit_requests": pending_visit_requests,
     }

@@ -60,6 +60,9 @@ lerna-debug.log*
 .DS_Store
 Thumbs.db
 
+# Uploads (cat images stored on server)
+backend/uploads/
+
 # Database
 *.db
 *.sqlite
@@ -84,7 +87,9 @@ env/
 venv/
 ENV/
 env.bak/
-venv.bak/# Claude-specific files
+venv.bak/
+
+# Claude-specific files
 CLAUDE.md
 CHAT_HISTORY*.md
 docs/CHAT_HISTORY*.md

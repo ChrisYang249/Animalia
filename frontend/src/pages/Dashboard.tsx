@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
+import { useNavigate } from 'react-router-dom';
 import {
   Card,
   Row,
@@ -20,6 +21,7 @@ import {
   ShoppingOutlined,
   ClockCircleOutlined,
   CheckCircleOutlined,
+  CalendarOutlined,
   PlusOutlined,
   DeleteOutlined,
   UploadOutlined,
@@ -34,14 +36,17 @@ interface DashboardStats {
   total_orders: number;
   pending_orders: number;
   completed_this_month: number;
+  pending_visit_requests: number;
 }
 
 const Dashboard = () => {
+  const navigate = useNavigate();
   const [stats, setStats] = useState<DashboardStats>({
     total_clients: 0,
     total_orders: 0,
     pending_orders: 0,
     completed_this_month: 0,
+    pending_visit_requests: 0,
   });
   const [cats, setCats] = useState<Cat[]>([]);
   const [loading, setLoading] = useState(true);
@@ -68,8 +73,8 @@ const Dashboard = () => {
       try {
         const response = await api.get('/dashboard/stats');
         setStats(response.data);
-      } catch (error) {
-        console.error('Failed to fetch stats:', error);
+      } catch {
+        message.error('Failed to load dashboard stats');
       } finally {
         setLoading(false);
       }
@@ -164,6 +169,22 @@ const Dashboard = () => {
               value={stats.completed_this_month}
               prefix={<CheckCircleOutlined />}
               valueStyle={{ color: '#52c41a' }}
+            />
+          </Card>
+        </Col>
+        <Col xs={24} sm={12} lg={6}>
+          <Card
+            hoverable
+            onClick={() => navigate('/visit-requests')}
+            style={{ cursor: 'pointer' }}
+          >
+            <Statistic
+              title="New Visit Requests"
+              value={stats.pending_visit_requests}
+              prefix={<CalendarOutlined />}
+              valueStyle={{
+                color: stats.pending_visit_requests > 0 ? '#faad14' : '#e8612a',
+              }}
             />
           </Card>
         </Col>

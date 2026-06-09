@@ -6,7 +6,12 @@ from fastapi import APIRouter, Depends, File, Form, HTTPException, UploadFile
 from sqlalchemy.orm import Session
 
 from app.api import deps
-from app.core.paths import ALLOWED_IMAGE_TYPES, CATS_UPLOAD_DIR, MAX_IMAGE_BYTES, ensure_upload_dirs
+from app.core.paths import (
+    ALLOWED_IMAGE_TYPES,
+    MAX_IMAGE_BYTES,
+    ensure_upload_dirs,
+    get_cats_upload_dir,
+)
 from app.models import User, Cat
 from app.schemas.cat import Cat as CatSchema
 
@@ -72,7 +77,7 @@ async def create_cat(
         ext = ".jpg"
 
     filename = f"{uuid.uuid4().hex}{ext}"
-    dest = CATS_UPLOAD_DIR / filename
+    dest = get_cats_upload_dir() / filename
     dest.write_bytes(contents)
 
     max_order = db.query(Cat.display_order).order_by(Cat.display_order.desc()).first()
@@ -101,7 +106,7 @@ def delete_cat(
     if not cat:
         raise HTTPException(status_code=404, detail="Cat not found")
 
-    file_path = CATS_UPLOAD_DIR / Path(cat.image_path).name
+    file_path = get_cats_upload_dir() / Path(cat.image_path).name
     if file_path.exists():
         file_path.unlink()
 

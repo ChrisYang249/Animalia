@@ -27,7 +27,11 @@ api.interceptors.response.use(
   (response) => response,
   (error) => {
     const path = window.location.pathname;
-    const isStaffRoute = path.startsWith('/dashboard') || path.startsWith('/clients') || path.startsWith('/orders');
+    const isStaffRoute =
+      path.startsWith('/dashboard') ||
+      path.startsWith('/visit-requests') ||
+      path.startsWith('/clients') ||
+      path.startsWith('/orders');
     if (error.response?.status === 401 && isStaffRoute) {
       localStorage.removeItem('access_token');
       window.location.href = '/staff/login';

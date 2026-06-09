@@ -1,6 +1,6 @@
 import { useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Form, Input, Button, DatePicker, Select, message } from 'antd';
+import { Form, Input, Button, DatePicker, message } from 'antd';
 import { ArrowLeftOutlined, FormOutlined, ExportOutlined } from '@ant-design/icons';
 import dayjs from 'dayjs';
 import AnimaliaLogo from '../components/AnimaliaLogo';
@@ -9,9 +9,6 @@ import { useCats } from '../hooks/useCats';
 import { api, catImageUrl } from '../config/api';
 import './Apply.css';
 
-const { Option } = Select;
-
-const VISIT_TIME_SLOTS = ['10:00 AM', '2:00 PM', '4:00 PM'];
 const ADOPTION_FORM_URL =
   'https://docs.google.com/forms/d/e/1FAIpQLSefypuHv6wYfE5jnlykYe91uJGYEaDhDE7cWPvJz8p-Col78A/viewform';
 
@@ -39,7 +36,7 @@ const Apply = () => {
         email: values.email?.trim() || null,
         phone: values.phone?.trim() || null,
         visit_date: values.visit_date.startOf('day').toISOString(),
-        visit_time: values.visit_time,
+        visit_time: values.visit_time.trim(),
         liked_cat_ids: likedIds.length > 0 ? likedIds : null,
       });
       navigate('/apply/confirmation');
@@ -70,8 +67,7 @@ const Apply = () => {
             <div className="apply__liked-list">
               {likedCats.map((cat) => (
                 <div key={cat.id} className="apply__liked-item">
-                  <img src={catImageUrl(cat.image)} alt={cat.name} />
-                  <span>{cat.name}</span>
+                  <img src={catImageUrl(cat.image)} alt="Liked cat" />
                 </div>
               ))}
             </div>
@@ -120,15 +116,9 @@ const Apply = () => {
           <Form.Item
             name="visit_time"
             label="Visit time"
-            rules={[{ required: true, message: 'Please select a time' }]}
+            rules={[{ required: true, message: 'Please enter a time' }]}
           >
-            <Select placeholder="Select a time slot" size="large">
-              {VISIT_TIME_SLOTS.map((slot) => (
-                <Option key={slot} value={slot}>
-                  {slot}
-                </Option>
-              ))}
-            </Select>
+            <Input placeholder="e.g. 2:00 PM" size="large" />
           </Form.Item>
 
           <div className="apply__adoption-form">

@@ -1,3 +1,5 @@
+from typing import List
+
 from pydantic_settings import BaseSettings
 
 
@@ -12,19 +14,33 @@ class Settings(BaseSettings):
     ALGORITHM: str = "HS256"
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 720
 
+    # Comma-separated origins, e.g. http://localhost:5173,https://animalia.onrender.com
+    CORS_ORIGINS: str = "http://localhost:5173,http://localhost:3000"
+
+    # Persistent disk path on Render, e.g. /var/data/uploads
+    UPLOADS_DIR: str = ""
+
+    # First-run admin bootstrap (only when users table is empty)
+    AUTO_CREATE_ADMIN: bool = True
+    ADMIN_USERNAME: str = "admin"
+    ADMIN_PASSWORD: str = "Admin123!"
+    ADMIN_EMAIL: str = "admin@animalia.org"
+    ADMIN_FULL_NAME: str = "Admin User"
+
     PASSWORD_MIN_LENGTH: int = 8
     PASSWORD_REQUIRE_UPPERCASE: bool = True
     PASSWORD_REQUIRE_LOWERCASE: bool = True
     PASSWORD_REQUIRE_NUMBERS: bool = True
     PASSWORD_REQUIRE_SPECIAL: bool = True
-    PASSWORD_HISTORY_COUNT: int = 5
     MAX_LOGIN_ATTEMPTS: int = 5
-    ACCOUNT_LOCKOUT_MINUTES: int = 30
-    SESSION_TIMEOUT_MINUTES: int = 30
 
     class Config:
         env_file = ".env"
         extra = "ignore"
+
+    @property
+    def cors_origins_list(self) -> List[str]:
+        return [origin.strip() for origin in self.CORS_ORIGINS.split(",") if origin.strip()]
 
 
 settings = Settings()

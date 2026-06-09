@@ -11,6 +11,7 @@ const ALL_STAFF: UserRole[] = ['super_admin', 'staff', 'admin'];
 
 export const routePermissions: RoutePermission[] = [
   { path: '/dashboard', allowedRoles: ALL_STAFF },
+  { path: '/visit-requests', allowedRoles: ALL_STAFF },
   { path: '/clients', allowedRoles: ALL_STAFF },
   { path: '/orders', allowedRoles: ALL_STAFF },
 ];
@@ -18,6 +19,7 @@ export const routePermissions: RoutePermission[] = [
 export const actionPermissions = {
   manageClients: ALL_STAFF,
   manageOrders: ALL_STAFF,
+  manageVisitRequests: ALL_STAFF,
 };
 
 export const canAccessRoute = (userRole: string | undefined, path: string): boolean => {

@@ -69,8 +69,3 @@ class Product(BaseModel):
 
     class Config:
         from_attributes = True
-
-
-class ProductList(BaseModel):
-    products: List[Product]
-    total: int

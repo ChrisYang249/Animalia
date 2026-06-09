@@ -15,8 +15,9 @@ const Login = () => {
       await login(values.username, values.password);
       message.success('Login successful');
       navigate('/dashboard');
-    } catch (error: any) {
-      message.error(error.response?.data?.detail || 'Login failed');
+    } catch (error: unknown) {
+      const err = error as { response?: { data?: { detail?: string } } };
+      message.error(err.response?.data?.detail || 'Login failed');
     }
   };
 
