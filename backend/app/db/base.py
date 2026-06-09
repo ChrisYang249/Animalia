@@ -4,7 +4,16 @@ from sqlalchemy.orm import sessionmaker
 
 from app.core.config import settings
 
-engine = create_engine(settings.DATABASE_URL)
+
+def _database_url() -> str:
+    url = settings.DATABASE_URL
+    # Render Postgres uses postgres://; SQLAlchemy requires postgresql://
+    if url.startswith("postgres://"):
+        return url.replace("postgres://", "postgresql://", 1)
+    return url
+
+
+engine = create_engine(_database_url())
 SessionLocal = sessionmaker(autocommit=False, autoflush=True, bind=engine)
 
 Base = declarative_base()
