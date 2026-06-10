@@ -93,3 +93,7 @@ venv.bak/
 CLAUDE.md
 CHAT_HISTORY*.md
 docs/CHAT_HISTORY*.md
+
+# Google OAuth secrets (downloaded from Cloud Console)
+client_secret*.json
+backend/client_secret*.json

@@ -27,6 +27,26 @@ class Settings(BaseSettings):
     ADMIN_EMAIL: str = "admin@animalia.org"
     ADMIN_FULL_NAME: str = "Admin User"
 
+    # Email (optional — visit request notifications). Leave SMTP_HOST empty to disable.
+    SMTP_HOST: str = ""
+    SMTP_PORT: int = 587
+    SMTP_USER: str = ""
+    SMTP_PASSWORD: str = ""
+    SMTP_FROM: str = ""
+    SMTP_USE_TLS: bool = True
+    # Comma-separated staff inboxes; defaults to ADMIN_EMAIL when unset
+    VISIT_REQUEST_NOTIFY_EMAIL: str = ""
+
+    # Google Calendar (optional — visit booking). Leave GOOGLE_REFRESH_TOKEN empty to disable.
+    GOOGLE_CLIENT_ID: str = ""
+    GOOGLE_CLIENT_SECRET: str = ""
+    GOOGLE_REFRESH_TOKEN: str = ""
+    GOOGLE_CALENDAR_ID: str = "primary"
+    VISIT_TIMEZONE: str = "Asia/Dubai"
+    VISIT_DURATION_MINUTES: int = 60
+    # Comma-separated extra invitees added to every visit event (e.g. personal email)
+    VISIT_STAFF_ATTENDEES: str = ""
+
     PASSWORD_MIN_LENGTH: int = 8
     PASSWORD_REQUIRE_UPPERCASE: bool = True
     PASSWORD_REQUIRE_LOWERCASE: bool = True
@@ -41,6 +61,15 @@ class Settings(BaseSettings):
     @property
     def cors_origins_list(self) -> List[str]:
         return [origin.strip() for origin in self.CORS_ORIGINS.split(",") if origin.strip()]
+
+    @property
+    def visit_request_notify_emails(self) -> List[str]:
+        raw = self.VISIT_REQUEST_NOTIFY_EMAIL.strip() or self.ADMIN_EMAIL
+        return [email.strip() for email in raw.split(",") if email.strip()]
+
+    @property
+    def visit_staff_attendees(self) -> List[str]:
+        return [email.strip() for email in self.VISIT_STAFF_ATTENDEES.split(",") if email.strip()]
 
 
 settings = Settings()

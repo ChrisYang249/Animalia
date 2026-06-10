@@ -1,11 +1,27 @@
 import logging
 
+from sqlalchemy import text
+
 from app.core.config import settings
 from app.crud.user import create_user, get_user_by_username
-from app.db.base import SessionLocal
+from app.db.base import SessionLocal, engine
 from app.models import User
 
 logger = logging.getLogger(__name__)
+
+
+def run_schema_upgrades() -> None:
+    """Lightweight migrations for columns added after the initial create_all."""
+    statements = [
+        "ALTER TABLE adoption_applications ADD COLUMN IF NOT EXISTS calendar_event_id VARCHAR",
+    ]
+    with engine.connect() as conn:
+        for statement in statements:
+            try:
+                conn.execute(text(statement))
+                conn.commit()
+            except Exception:
+                logger.exception("Schema upgrade failed: %s", statement)
 
 
 def ensure_default_admin() -> None:

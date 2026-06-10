@@ -7,7 +7,7 @@ import logging
 
 from app.core.config import settings
 from app.core.paths import ensure_upload_dirs, get_uploads_dir
-from app.core.startup import ensure_default_admin
+from app.core.startup import ensure_default_admin, run_schema_upgrades
 from app.api.api_v1.api import api_router
 from app.db.base import engine, Base
 from app.models import *  # Import all models
@@ -22,6 +22,7 @@ async def lifespan(app: FastAPI):
     uploads_dir = ensure_upload_dirs()
     logger.info("Uploads directory: %s", uploads_dir)
     Base.metadata.create_all(bind=engine)
+    run_schema_upgrades()
     ensure_default_admin()
     yield
     logger.info("Shutting down...")

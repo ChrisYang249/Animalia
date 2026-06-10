@@ -1,6 +1,6 @@
 import { useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Form, Input, Button, DatePicker, message } from 'antd';
+import { Form, Input, Button, DatePicker, Select, message } from 'antd';
 import { ArrowLeftOutlined, FormOutlined, ExportOutlined } from '@ant-design/icons';
 import dayjs from 'dayjs';
 import AnimaliaLogo from '../components/AnimaliaLogo';
@@ -11,6 +11,12 @@ import './Apply.css';
 
 const ADOPTION_FORM_URL =
   'https://docs.google.com/forms/d/e/1FAIpQLSefypuHv6wYfE5jnlykYe91uJGYEaDhDE7cWPvJz8p-Col78A/viewform';
+
+// Hourly slots, 10:00 AM through 7:00 PM
+const VISIT_TIME_OPTIONS = Array.from({ length: 10 }, (_, i) => {
+  const label = dayjs().hour(10 + i).minute(0).format('h:mm A');
+  return { value: label, label };
+});
 
 const Apply = () => {
   const navigate = useNavigate();
@@ -116,9 +122,13 @@ const Apply = () => {
           <Form.Item
             name="visit_time"
             label="Visit time"
-            rules={[{ required: true, message: 'Please enter a time' }]}
+            rules={[{ required: true, message: 'Please select a time' }]}
           >
-            <Input placeholder="e.g. 2:00 PM" size="large" />
+            <Select
+              placeholder="Select a time"
+              size="large"
+              options={VISIT_TIME_OPTIONS}
+            />
           </Form.Item>
 
           <div className="apply__adoption-form">

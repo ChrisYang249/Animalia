@@ -36,6 +36,28 @@ services:
         sync: false
       - key: ADMIN_PASSWORD
         sync: false
+      - key: SMTP_HOST
+        sync: false
+      - key: SMTP_USER
+        sync: false
+      - key: SMTP_PASSWORD
+        sync: false
+      - key: SMTP_FROM
+        sync: false
+      - key: VISIT_REQUEST_NOTIFY_EMAIL
+        sync: false
+      - key: GOOGLE_CLIENT_ID
+        sync: false
+      - key: GOOGLE_CLIENT_SECRET
+        sync: false
+      - key: GOOGLE_REFRESH_TOKEN
+        sync: false
+      - key: GOOGLE_CALENDAR_ID
+        value: primary
+      - key: VISIT_TIMEZONE
+        value: Asia/Dubai
+      - key: VISIT_STAFF_ATTENDEES
+        sync: false
       - key: AUTO_CREATE_ADMIN
         value: true
 

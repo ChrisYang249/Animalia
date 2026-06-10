@@ -14,4 +14,5 @@ class AdoptionApplication(Base):
     visit_time = Column(String, nullable=False)
     liked_cat_ids = Column(Text)
     status = Column(String, default="submitted")
+    calendar_event_id = Column(String, nullable=True)
     created_at = Column(DateTime(timezone=True), server_default=func.now())

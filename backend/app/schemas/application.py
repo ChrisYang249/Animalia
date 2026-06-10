@@ -18,6 +18,12 @@ class ApplicationUpdate(BaseModel):
     status: Optional[ApplicationStatus] = None
 
 
+class ApplicationBook(BaseModel):
+    # Optional override when the free-text visit_time can't be parsed
+    start_time: Optional[datetime] = None
+    duration_minutes: Optional[int] = Field(default=None, ge=15, le=480)
+
+
 class LikedCatSummary(BaseModel):
     id: int
     name: str
@@ -33,4 +39,5 @@ class ApplicationDetail(BaseModel):
     visit_time: str
     liked_cats: List[LikedCatSummary] = []
     status: str
+    calendar_event_id: Optional[str] = None
     created_at: datetime
