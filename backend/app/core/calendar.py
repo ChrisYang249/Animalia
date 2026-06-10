@@ -50,13 +50,26 @@ def create_visit_event(
 
     end = start + timedelta(minutes=duration_minutes or settings.VISIT_DURATION_MINUTES)
 
-    description_lines = ["Adoption visit booked via Animalia."]
+    description_lines = [
+        "You're booked for an adoption visit at Animalia Welfare and More!",
+        "",
+        f"Visitor: {applicant_name}",
+    ]
     if phone:
         description_lines.append(f"Phone: {phone}")
     if applicant_email:
         description_lines.append(f"Email: {applicant_email}")
     if liked_cat_names:
-        description_lines.append(f"Liked cats: {', '.join(liked_cat_names)}")
+        description_lines.append(f"Cats they'd like to meet: {', '.join(liked_cat_names)}")
+    description_lines += [
+        "",
+        "What to expect: you'll get to meet our cats, spend time with any you've "
+        "liked, and chat with our team about the adoption process.",
+        "",
+        "Need to reschedule? Reply to this invitation and we'll find a new time.",
+        "",
+        "— The Animalia Team",
+    ]
 
     event = {
         "summary": f"Adoption visit with Animalia — {applicant_name}",
