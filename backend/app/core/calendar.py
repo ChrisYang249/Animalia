@@ -59,7 +59,7 @@ def create_visit_event(
         description_lines.append(f"Liked cats: {', '.join(liked_cat_names)}")
 
     event = {
-        "summary": f"Adoption visit — {applicant_name}",
+        "summary": f"Adoption visit with Animalia — {applicant_name}",
         "description": "\n".join(description_lines),
         "start": {"dateTime": start.isoformat(), "timeZone": settings.VISIT_TIMEZONE},
         "end": {"dateTime": end.isoformat(), "timeZone": settings.VISIT_TIMEZONE},
