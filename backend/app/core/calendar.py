@@ -118,10 +118,11 @@ def delete_visit_event(event_id: str) -> bool:
         return False
     try:
         service = _build_service()
+        # sendUpdates="none": clearing old requests should not email attendees a cancellation
         service.events().delete(
             calendarId=settings.GOOGLE_CALENDAR_ID,
             eventId=event_id,
-            sendUpdates="all",
+            sendUpdates="none",
         ).execute()
         logger.info("Deleted calendar event %s", event_id)
         return True
