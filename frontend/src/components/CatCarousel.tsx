@@ -97,7 +97,6 @@ const CatCarousel = ({ cats, onIndexChange }: CatCarouselProps) => {
               aria-label="Flip back to photo"
             >
               <div className="cat-card__back-content">
-                <h3 className="cat-card__back-title">{cat.name || 'About this cat'}</h3>
                 <p className="cat-card__back-text">
                   {cat.description || 'More details coming soon.'}
                 </p>
