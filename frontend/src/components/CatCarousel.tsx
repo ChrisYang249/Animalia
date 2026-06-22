@@ -79,6 +79,9 @@ const CatCarousel = ({ cats, onIndexChange }: CatCarouselProps) => {
               >
                 <div className="cat-card__image-wrap">
                   <img src={catImageUrl(cat.image)} alt={cat.name} className="cat-card__image" />
+                  {cat.status === 'available' && (
+                    <span className="cat-card__status-badge">Available</span>
+                  )}
                   <span className="cat-card__info-hint">Tap for info</span>
                 </div>
               </button>
