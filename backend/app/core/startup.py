@@ -14,6 +14,7 @@ def run_schema_upgrades() -> None:
     """Lightweight migrations for columns added after the initial create_all."""
     statements = [
         "ALTER TABLE adoption_applications ADD COLUMN IF NOT EXISTS calendar_event_id VARCHAR",
+        "ALTER TABLE cats ADD COLUMN IF NOT EXISTS description TEXT",
     ]
     with engine.connect() as conn:
         for statement in statements:

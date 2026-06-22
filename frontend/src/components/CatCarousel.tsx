@@ -14,10 +14,12 @@ const CatCarousel = ({ cats, onIndexChange }: CatCarouselProps) => {
   const [current, setCurrent] = useState(0);
   const [direction, setDirection] = useState<'left' | 'right' | null>(null);
   const [animating, setAnimating] = useState(false);
+  const [flipped, setFlipped] = useState(false);
 
   const goTo = useCallback(
     (next: number, dir: 'left' | 'right') => {
       if (animating || cats.length === 0) return;
+      setFlipped(false);
       setDirection(dir);
       setAnimating(true);
       setTimeout(() => {
@@ -67,11 +69,38 @@ const CatCarousel = ({ cats, onIndexChange }: CatCarouselProps) => {
         )}
 
         <div className={slideClass}>
-          <div className="cat-card__image-wrap">
-            <img src={catImageUrl(cat.image)} alt={cat.name} className="cat-card__image" />
-          </div>
-          <div className="cat-card__actions">
-            <CatHeartButton catId={cat.id} />
+          <div className={`cat-card__flipper${flipped ? ' cat-card__flipper--flipped' : ''}`}>
+            <div className="cat-card__face cat-card__face--front">
+              <button
+                type="button"
+                className="cat-card__flip-trigger"
+                onClick={() => setFlipped(true)}
+                aria-label={`See more about ${cat.name || 'this cat'}`}
+              >
+                <div className="cat-card__image-wrap">
+                  <img src={catImageUrl(cat.image)} alt={cat.name} className="cat-card__image" />
+                  <span className="cat-card__info-hint">Tap for info</span>
+                </div>
+              </button>
+              <div className="cat-card__actions">
+                <CatHeartButton catId={cat.id} />
+              </div>
+            </div>
+
+            <button
+              type="button"
+              className="cat-card__face cat-card__face--back"
+              onClick={() => setFlipped(false)}
+              aria-label="Flip back to photo"
+            >
+              <div className="cat-card__back-content">
+                <h3 className="cat-card__back-title">{cat.name || 'About this cat'}</h3>
+                <p className="cat-card__back-text">
+                  {cat.description || 'More details coming soon.'}
+                </p>
+              </div>
+              <span className="cat-card__back-hint">Tap to flip back</span>
+            </button>
           </div>
         </div>
 

@@ -13,7 +13,7 @@ from app.core.paths import (
     get_cats_upload_dir,
 )
 from app.models import User, Cat
-from app.schemas.cat import Cat as CatSchema
+from app.schemas.cat import Cat as CatSchema, CatUpdate
 
 router = APIRouter()
 
@@ -28,6 +28,7 @@ def _to_schema(cat: Cat) -> dict:
         "name": cat.name,
         "image": _image_url(cat.image_path),
         "status": cat.status,
+        "description": cat.description,
         "display_order": cat.display_order,
         "created_at": cat.created_at,
         "updated_at": cat.updated_at,
@@ -89,6 +90,28 @@ async def create_cat(
         status="available",
         display_order=next_order,
     )
+    db.add(cat)
+    db.commit()
+    db.refresh(cat)
+    return _to_schema(cat)
+
+
+@router.patch("/{cat_id}", response_model=CatSchema)
+def update_cat(
+    *,
+    db: Session = Depends(deps.get_db),
+    cat_id: int,
+    cat_in: CatUpdate,
+    current_user: User = Depends(deps.get_current_user),
+) -> Any:
+    cat = db.query(Cat).filter(Cat.id == cat_id).first()
+    if not cat:
+        raise HTTPException(status_code=404, detail="Cat not found")
+
+    updates = cat_in.model_dump(exclude_unset=True)
+    for field, value in updates.items():
+        setattr(cat, field, value)
+
     db.add(cat)
     db.commit()
     db.refresh(cat)

@@ -9,6 +9,7 @@ import {
   Button,
   Modal,
   Form,
+  Input,
   Upload,
   Typography,
   message,
@@ -24,6 +25,7 @@ import {
   CalendarOutlined,
   PlusOutlined,
   DeleteOutlined,
+  EditOutlined,
   UploadOutlined,
 } from '@ant-design/icons';
 import type { UploadFile } from 'antd';
@@ -55,6 +57,9 @@ const Dashboard = () => {
   const [uploading, setUploading] = useState(false);
   const [fileList, setFileList] = useState<UploadFile[]>([]);
   const [form] = Form.useForm();
+  const [editingCat, setEditingCat] = useState<Cat | null>(null);
+  const [savingInfo, setSavingInfo] = useState(false);
+  const [editForm] = Form.useForm();
 
   const fetchCats = useCallback(async () => {
     setCatsLoading(true);
@@ -90,6 +95,30 @@ const Dashboard = () => {
       fetchCats();
     } catch {
       message.error('Failed to remove cat');
+    }
+  };
+
+  const openEdit = (cat: Cat) => {
+    setEditingCat(cat);
+    editForm.setFieldsValue({ description: cat.description ?? '' });
+  };
+
+  const handleSaveInfo = async (values: { description?: string }) => {
+    if (!editingCat) return;
+    setSavingInfo(true);
+    try {
+      await api.patch(`/cats/${editingCat.id}`, {
+        description: values.description?.trim() || null,
+      });
+      message.success('Cat details saved');
+      setEditingCat(null);
+      editForm.resetFields();
+      fetchCats();
+    } catch (error: unknown) {
+      const err = error as { response?: { data?: { detail?: string } } };
+      message.error(err.response?.data?.detail || 'Failed to save details');
+    } finally {
+      setSavingInfo(false);
     }
   };
 
@@ -217,6 +246,13 @@ const Dashboard = () => {
                   />
                 }
                 actions={[
+                  <Button
+                    key="edit"
+                    type="text"
+                    icon={<EditOutlined />}
+                    aria-label="Edit cat details"
+                    onClick={() => openEdit(cat)}
+                  />,
                   <Popconfirm
                     key="delete"
                     title="Remove this cat?"
@@ -233,6 +269,11 @@ const Dashboard = () => {
                 <Tag color={cat.status === 'available' ? 'green' : 'default'}>
                   {cat.status}
                 </Tag>
+                {!cat.description && (
+                  <Tag color="orange" style={{ marginTop: 6 }}>
+                    Needs details
+                  </Tag>
+                )}
               </Card>
             </Col>
           ))}
@@ -271,6 +312,38 @@ const Dashboard = () => {
 
           <Button type="primary" htmlType="submit" loading={uploading} block>
             Upload
+          </Button>
+        </Form>
+      </Modal>
+
+      <Modal
+        title="Edit cat details"
+        open={editingCat !== null}
+        onCancel={() => {
+          setEditingCat(null);
+          editForm.resetFields();
+        }}
+        footer={null}
+        width={480}
+      >
+        <Typography.Paragraph type="secondary" style={{ marginBottom: 16 }}>
+          Add this cat&apos;s story and details — gender, age, breed, personality, background, or
+          anything adopters should know. This text appears on the back of the card when visitors tap
+          it on the browse page.
+        </Typography.Paragraph>
+
+        <Form form={editForm} layout="vertical" onFinish={handleSaveInfo}>
+          <Form.Item label="Cat details" name="description">
+            <Input.TextArea
+              rows={8}
+              maxLength={2000}
+              showCount
+              placeholder="e.g. Mango is a 2-year-old male domestic shorthair, around 4 kg. He's playful, loves laps, and was rescued as a stray..."
+            />
+          </Form.Item>
+
+          <Button type="primary" htmlType="submit" loading={savingInfo} block>
+            Save details
           </Button>
         </Form>
       </Modal>

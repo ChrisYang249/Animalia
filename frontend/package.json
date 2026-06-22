@@ -11,6 +11,9 @@
   },
   "dependencies": {
     "@ant-design/icons": "^6.0.0",
+    "@capacitor/cli": "^8.4.0",
+    "@capacitor/core": "^8.4.0",
+    "@capacitor/ios": "^8.4.0",
     "antd": "^5.25.3",
     "axios": "^1.9.0",
     "dayjs": "^1.11.13",

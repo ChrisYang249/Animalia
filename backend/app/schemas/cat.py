@@ -14,9 +14,16 @@ class CatCreate(CatBase):
     pass
 
 
+class CatUpdate(BaseModel):
+    name: Optional[str] = None
+    status: Optional[CatStatus] = None
+    description: Optional[str] = None
+
+
 class Cat(CatBase):
     id: int
     image: str
+    description: Optional[str] = None
     display_order: int
     created_at: datetime
     updated_at: Optional[datetime] = None

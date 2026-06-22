@@ -21,10 +21,99 @@
   max-width: 340px;
   background: #fff;
   border-radius: 20px;
-  overflow: hidden;
   box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
   transition: transform 0.28s ease, opacity 0.28s ease;
+  perspective: 1400px;
   z-index: 2;
+}
+
+.cat-card__flipper {
+  position: relative;
+  width: 100%;
+  transform-style: preserve-3d;
+  transition: transform 0.6s cubic-bezier(0.4, 0.2, 0.2, 1);
+}
+
+.cat-card__flipper--flipped {
+  transform: rotateY(180deg);
+}
+
+.cat-card__face {
+  width: 100%;
+  border-radius: 20px;
+  overflow: hidden;
+  background: #fff;
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+}
+
+.cat-card__face--front {
+  position: relative;
+}
+
+.cat-card__face--back {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  padding: 0;
+  border: none;
+  text-align: left;
+  cursor: pointer;
+  transform: rotateY(180deg);
+  background: #fffaf6;
+}
+
+.cat-card__flip-trigger {
+  display: block;
+  width: 100%;
+  padding: 0;
+  border: none;
+  background: none;
+  cursor: pointer;
+}
+
+.cat-card__info-hint {
+  position: absolute;
+  bottom: 12px;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 5px 14px;
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.55);
+  color: #fff;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  pointer-events: none;
+}
+
+.cat-card__back-content {
+  flex: 1;
+  overflow-y: auto;
+  padding: 24px 22px 12px;
+}
+
+.cat-card__back-title {
+  margin: 0 0 12px;
+  font-size: 20px;
+  font-weight: 700;
+  color: #e8612a;
+}
+
+.cat-card__back-text {
+  margin: 0;
+  font-size: 15px;
+  line-height: 1.6;
+  color: #3a3a3a;
+  white-space: pre-wrap;
+}
+
+.cat-card__back-hint {
+  padding: 10px 22px 16px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #b08b78;
 }
 
 .cat-card--peek {
